@@ -1,0 +1,17 @@
+{
+  "name": "ayliz-lojistik",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ayliz Lojistik kurumsal web sitesi (statik, Bootstrap 5)",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs && node --watch-path=src --watch-path=build.mjs -e \"import('./build.mjs')\" & npx --yes serve dist -l 3000",
+    "serve": "node build.mjs && npx --yes serve dist -l 3000",
+    "docker:build": "docker build -t ayliz-lojistik .",
+    "docker:run": "docker run --rm -p 8080:80 ayliz-lojistik"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,3 @@
+# Docker/nginx dosyalarinin Linux'ta LF ile calismasi icin
+* text=auto eol=lf
+*.png binary

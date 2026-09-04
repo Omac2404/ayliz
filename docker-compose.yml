@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    image: ayliz-lojistik:latest
+    container_name: ayliz-lojistik
+    ports:
+      - "8080:80"
+    restart: unless-stopped
