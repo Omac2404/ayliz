@@ -405,3 +405,23 @@ ul.ayl-check li::before{content:"\f26a";font-family:"bootstrap-icons";position:a
     .ayl-offcanvas .nav-link{padding:1rem .78rem !important}
     .ayl-offcanvas .nav-link::after{left:.78rem;right:.78rem}
 }
+
+/* ---------- DIL SECICI: sadece bayrak, kutu ve etiket yok ---------- */
+.ayl-lang{gap:.6rem}
+.ayl-lang-btn{background:transparent !important;border:0 !important;padding:0 !important;box-shadow:none !important;opacity:.42;filter:grayscale(.4);position:relative;transition:.2s}
+.ayl-lang-btn span{display:none !important}
+.ayl-lang-btn:hover{opacity:.75;filter:grayscale(0)}
+.ayl-lang-btn.is-active{opacity:1;filter:none}
+.ayl-lang-btn.is-active::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--ayl-red);border-radius:2px}
+.ayl-lang-flag{width:24px;height:16px;box-shadow:0 0 0 1px rgba(0,0,0,.1)}
+.ayl-navbar .ayl-lang{margin-left:1.75rem}
+.ayl-offcanvas .ayl-lang{gap:1rem}
+.ayl-offcanvas .ayl-lang-flag{width:30px;height:20px}
+@media (min-width:992px){
+    .ayl-navbar .ayl-lang-btn,.ayl-navbar .ayl-lang-btn.is-active{background:transparent;border:0;padding:0}
+    .ayl-navbar .ayl-lang-btn span,.ayl-navbar .ayl-lang-btn.is-active span{display:none}
+}
+
+/* ---------- BANNER BASLIKLARI DAHA INCE ---------- */
+.ayl-hero h1{font-weight:500;letter-spacing:-.4px}
+.ayl-page-header h1{font-weight:500;letter-spacing:-.3px}

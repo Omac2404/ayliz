@@ -7,6 +7,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -132,6 +133,18 @@ const DEST_PORTS = ["Le Havre (Fransa)", "Fos / Marsilya (Fransa)", "Anvers (Bel
  *  YARDIMCILAR
  * ========================================================================= */
 const u = (p = "/") => (p === "/" ? "/" : "/" + String(p).replace(/^\/+|\/+$/g, "") + "/");
+
+/* Asset surumleme: dosya degisince URL degisir, tarayici eski CSS/JS'e takilmaz */
+function assetUrl(rel) {
+  const hash = crypto
+    .createHash("sha1")
+    .update(fs.readFileSync(path.join(SRC, rel)))
+    .digest("hex")
+    .slice(0, 8);
+  return `/${rel}?v=${hash}`;
+}
+const CSS_URL = assetUrl("assets/css/style.css");
+const JS_URL = assetUrl("assets/js/main.js");
 
 /* ---------- Bayrak ikonlari (inline SVG, harici istek yok) ---------- */
 function flagSvg(code, uid) {
@@ -485,14 +498,14 @@ function layout({ title, description, slug, body }) {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="${CSS_URL}">
 </head>
 <body>
 ${header()}
 ${body}
 ${footer()}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
-<script src="/assets/js/main.js" defer></script>
+<script src="${JS_URL}" defer></script>
 </body>
 </html>
 `;
