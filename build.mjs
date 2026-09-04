@@ -133,6 +133,37 @@ const DEST_PORTS = ["Le Havre (Fransa)", "Fos / Marsilya (Fransa)", "Anvers (Bel
  * ========================================================================= */
 const u = (p = "/") => (p === "/" ? "/" : "/" + String(p).replace(/^\/+|\/+$/g, "") + "/");
 
+/* ---------- Bayrak ikonlari (inline SVG, harici istek yok) ---------- */
+function flagSvg(code, uid) {
+  const cls = 'class="ayl-lang-flag" viewBox="0 0 30 20" aria-hidden="true"';
+  if (code === "tr") {
+    return `<svg ${cls}><rect width="30" height="20" fill="#E30A17"/><circle cx="12" cy="10" r="5" fill="#fff"/><circle cx="13.7" cy="10" r="4" fill="#E30A17"/><path d="M19.9 7.9 20.6 9.9 22.7 9.9 21 11.1 21.6 13.1 19.9 11.9 18.2 13.1 18.8 11.1 17.1 9.9 19.2 9.9Z" fill="#fff"/></svg>`;
+  }
+  if (code === "fr") {
+    return `<svg ${cls}><rect width="10" height="20" fill="#002395"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ED2939"/></svg>`;
+  }
+  /* en - Union Jack */
+  const id = `ayl-uj-${uid}`;
+  return `<svg class="ayl-lang-flag" viewBox="0 0 60 40" aria-hidden="true"><clipPath id="${id}"><path d="M30,20 h30 v20 z v20 h-30 z h-30 v-20 z v-20 h30 z"/></clipPath><path d="M0,0 v40 h60 v-40 z" fill="#00247d"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="8"/><path d="M0,0 L60,40 M60,0 L0,40" clip-path="url(#${id})" stroke="#cf142b" stroke-width="5"/><path d="M30,0 v40 M0,20 h60" stroke="#fff" stroke-width="13"/><path d="M30,0 v40 M0,20 h60" stroke="#cf142b" stroke-width="8"/></svg>`;
+}
+
+/* Dil secici - bayraklar simdilik pasif, ceviri son asamada devreye alinacak */
+function langSwitcher(scope) {
+  const langs = [
+    ["tr", "TR", true],
+    ["en", "EN", false],
+    ["fr", "FR", false],
+  ];
+  return `<div class="ayl-lang" role="group" aria-label="Dil seçimi">${langs
+    .map(
+      ([code, label, active]) =>
+        `<button type="button" class="ayl-lang-btn${active ? " is-active" : ""}" data-lang="${code}" disabled title="${
+          active ? "Türkçe" : "Çeviri yakında eklenecek"
+        }" aria-disabled="true">${flagSvg(code, scope + "-" + code)}<span>${label}</span></button>`
+    )
+    .join("")}</div>`;
+}
+
 function pageHeader(title, crumbs = []) {
   const items = crumbs
     .map((c) =>
@@ -175,26 +206,50 @@ function serviceGrid(list = SERVICES) {
     .join("");
 }
 
-function companyCards() {
-  return COMPANIES.map(
-    (c) => `
-                        <div class="col-lg-4 col-md-6">
-                            <div class="ayl-company-card${c.fr ? " is-fr" : ""}">
-                                <span class="ayl-company-flag"><i class="bi bi-${c.icon}"></i> ${c.flag}</span>
-                                <h3>${c.name}</h3>
-                                <div class="ayl-company-role">${c.role}</div>
-                                <p>${c.text}</p>
-                                <ul class="ayl-company-meta">
+function metaList(c) {
+  return `<ul class="ayl-company-meta">
                                     ${c.meta
                                       .map(
                                         ([i, k, v]) =>
                                           `<li><i class="bi bi-${i}"></i><div><strong>${k}:</strong> <span>${v}</span></div></li>`
                                       )
                                       .join("\n                                    ")}
-                                </ul>
+                                </ul>`;
+}
+
+/* Ayliz one cikan genis kart, Fransa ayagindaki iki sirket altinda */
+function companyCards() {
+  const [lead, ...rest] = COMPANIES;
+  return `
+                        <div class="col-12">
+                            <div class="ayl-company-card is-featured">
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-lg-6">
+                                        <span class="ayl-featured-tag"><i class="bi bi-star-fill"></i> Grubun Türkiye Ayağı</span>
+                                        <span class="ayl-company-flag"><i class="bi bi-${lead.icon}"></i> ${lead.flag}</span>
+                                        <h3>${lead.name}</h3>
+                                        <div class="ayl-company-role">${lead.role}</div>
+                                        <p>${lead.text}</p>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        ${metaList(lead)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>${rest
+                          .map(
+                            (c) => `
+                        <div class="col-lg-6">
+                            <div class="ayl-company-card${c.fr ? " is-fr" : ""}">
+                                <span class="ayl-company-flag"><i class="bi bi-${c.icon}"></i> ${c.flag}</span>
+                                <h3>${c.name}</h3>
+                                <div class="ayl-company-role">${c.role}</div>
+                                <p>${c.text}</p>
+                                ${metaList(c)}
                             </div>
                         </div>`
-  ).join("");
+                          )
+                          .join("")}`;
 }
 
 function chainFlow() {
@@ -321,7 +376,9 @@ function header() {
                                 <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                                     <a class="ayl-btn ayl-btn-primary" href="${u("/teklif-al")}"><i class="bi bi-file-earmark-text"></i> Teklif Al</a>
                                 </li>
+                                <li class="nav-item d-none d-lg-flex align-items-center">${langSwitcher("nav")}</li>
                             </ul>
+                            <div class="d-lg-none">${langSwitcher("mob")}</div>
                         </div>
                     </div>
                 </div>
@@ -423,6 +480,9 @@ function layout({ title, description, slug, body }) {
     <link rel="apple-touch-icon" href="${SITE.logo}">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://images.pexels.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/assets/css/style.css">
@@ -1418,15 +1478,28 @@ pages.push({
                     <div class="row g-4 mt-1">
                         ${COMPANIES.map(
                           (c) => `<div class="col-lg-4 col-md-6">
-                            <div class="ayl-feature-box h-100">
-                                <i class="bi bi-${c.icon}"></i>
-                                <div>
-                                    <h5>${c.name} <span class="text-muted" style="font-weight:500">· ${c.flag}</span></h5>
-                                    <p>${c.meta
-                                      .filter(([, k]) => ["Adres", "Telefon", "E-posta"].includes(k))
-                                      .map(([, k, v]) => `${k}: ${v}`)
-                                      .join("<br>")}</p>
+                            <div class="ayl-office-card${c.fr ? " is-fr" : ""}">
+                                <div class="ayl-office-head">
+                                    <div class="ayl-office-icon"><i class="bi bi-${c.icon}"></i></div>
+                                    <div>
+                                        <span class="ayl-office-country">${c.flag}</span>
+                                        <h5>${c.name}</h5>
+                                    </div>
                                 </div>
+                                <ul class="ayl-office-list">
+                                    ${c.meta
+                                      .filter(([, k]) => ["Adres", "Telefon", "E-posta"].includes(k))
+                                      .map(([i, k, v]) => {
+                                        const link =
+                                          k === "Telefon"
+                                            ? `<a href="tel:${v.replace(/[^0-9+]/g, "")}">${v}</a>`
+                                            : k === "E-posta"
+                                            ? `<a href="mailto:${v}">${v}</a>`
+                                            : v;
+                                        return `<li><i class="bi bi-${i}"></i><span>${link}</span></li>`;
+                                      })
+                                      .join("\n                                    ")}
+                                </ul>
                             </div>
                         </div>`
                         ).join("\n                        ")}
